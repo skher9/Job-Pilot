@@ -11,6 +11,8 @@ async function getPageData(userId: string) {
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
 
+  type App = Awaited<ReturnType<typeof prisma.application.findMany>>[number];
+
   const [all, recent] = await Promise.all([
     prisma.application.findMany({ where: { userId } }),
     prisma.application.findMany({
@@ -22,10 +24,10 @@ async function getPageData(userId: string) {
 
   return {
     stats: {
-      totalApplied: all.filter((a) => a.status === "applied").length,
-      interviews: all.filter((a) => a.status === "interviewing").length,
-      pendingReview: all.filter((a) => a.status === "ready").length,
-      thisWeek: all.filter((a) => a.createdAt > weekAgo).length,
+      totalApplied: all.filter((a: App) => a.status === "applied").length,
+      interviews: all.filter((a: App) => a.status === "interviewing").length,
+      pendingReview: all.filter((a: App) => a.status === "ready").length,
+      thisWeek: all.filter((a: App) => a.createdAt > weekAgo).length,
     },
     recent,
   };
@@ -65,7 +67,7 @@ export default async function DashboardPage() {
       <div>
         <h2 className="text-sm font-medium text-zinc-400 mb-3">Recent Applications</h2>
         <ApplicationTable
-          apps={data.recent.map((a) => ({
+          apps={data.recent.map((a: (typeof data.recent)[number]) => ({
             ...a,
             appliedAt: a.appliedAt?.toISOString() ?? null,
             createdAt: a.createdAt.toISOString(),
