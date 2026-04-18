@@ -1,5 +1,6 @@
 import { ApplicationTable } from "@/components/dashboard/ApplicationTable";
 import { prisma } from "@/lib/db/prisma";
+import type { Application } from "@prisma/client";
 
 const TEMP_USER_ID = "cltemp0000000000000000000";
 
@@ -24,7 +25,7 @@ export default async function ApplicationsPage() {
       </div>
 
       <ApplicationTable
-        apps={apps.map((a) => ({
+        apps={apps.map((a: Application) => ({
           ...a,
           appliedAt: a.appliedAt?.toISOString() ?? null,
           createdAt: a.createdAt.toISOString(),
