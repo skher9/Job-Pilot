@@ -1,17 +1,25 @@
 import OpenAI from "openai";
 
-const globalForOpenAI = globalThis as unknown as { openai: OpenAI };
-
-export const openai =
-  globalForOpenAI.openai ??
-  new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
-  });
-
-if (process.env.NODE_ENV !== "production") globalForOpenAI.openai = openai;
-
 export const AI_MODEL = "deepseek-chat";
+
+const globalForOpenAI = globalThis as unknown as { openai: OpenAI | undefined };
+
+export function getOpenAI(): OpenAI {
+  if (!globalForOpenAI.openai) {
+    globalForOpenAI.openai = new OpenAI({
+      apiKey: process.env.DEEPSEEK_API_KEY ?? "missing",
+      baseURL: "https://api.deepseek.com",
+    });
+  }
+  return globalForOpenAI.openai;
+}
+
+// Keep backward compat — lazily resolved on first access
+export const openai = new Proxy({} as OpenAI, {
+  get(_t, prop) {
+    return (getOpenAI() as unknown as Record<string | symbol, unknown>)[prop];
+  },
+});
 
 export async function chatCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
