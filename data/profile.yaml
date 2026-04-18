@@ -1,0 +1,61 @@
+personal:
+  name: "Shravani Kher"
+  email: "shravani@example.com"
+  phone: "+91-9999999999"
+  location: "Pune, India"
+  linkedin: "https://linkedin.com/in/shravani"
+  github: "https://github.com/shravani"
+  portfolio: "https://shravani.dev"
+
+summary: "Frontend-heavy full-stack engineer with 4 years of experience building production React/Next.js applications. Strong TypeScript, Node.js, and PostgreSQL background. Shipped EHR platform, cloud marketplace, and open-source libraries."
+
+experience:
+  - title: "SDE II"
+    company: "Coditation Systems"
+    duration: "2022 - Present"
+    responsibilities:
+      - "Built healthcare EHR platform using React, TypeScript, Node.js serving 50+ hospitals"
+      - "Developed cloud marketplace procurement platform with complex multi-step workflows"
+      - "Reduced bundle size by 40% through code splitting and lazy loading"
+      - "Led frontend architecture for 3-person team, introduced design system"
+    skills:
+      - React
+      - Next.js
+      - TypeScript
+      - Node.js
+      - PostgreSQL
+      - Tailwind CSS
+
+education:
+  - degree: "B.E. Computer Engineering"
+    institution: "Example University"
+    year: "2021"
+
+skills:
+  primary:
+    - React
+    - Next.js
+    - TypeScript
+    - Redux
+    - Tailwind CSS
+    - Framer Motion
+  backend:
+    - Node.js
+    - Express
+    - PostgreSQL
+    - MongoDB
+    - Prisma
+  tools:
+    - Git
+    - Docker
+    - Webpack
+    - Vite
+    - Playwright
+
+projects:
+  - name: "CrispUI"
+    description: "Published React component library with 50+ components. Used in 3 production projects."
+    url: "https://crispui.vercel.app"
+  - name: "lumiq"
+    description: "Data fetching library for React/Next.js. Simplifies SWR patterns with automatic caching."
+    url: "https://npmjs.com/package/lumiq"

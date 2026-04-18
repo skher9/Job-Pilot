@@ -1,65 +1,122 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Zap, Bot, FileText, BarChart3, ArrowRight, Check } from "lucide-react";
 
-export default function Home() {
+const FEATURES = [
+  {
+    icon: Bot,
+    title: "Agent Pipeline",
+    desc: "Scrape jobs → score fit → tailor resume → generate cover letter. All automated.",
+  },
+  {
+    icon: BarChart3,
+    title: "AI Job Scoring",
+    desc: "GPT-4o scores each job 1–10 based on your profile. Only applies above your threshold.",
+  },
+  {
+    icon: FileText,
+    title: "Resume Diff",
+    desc: "See exactly what the AI changed between your base resume and the tailored version.",
+  },
+];
+
+const WHAT_CHANGES = [
+  ["Python CLI only", "Full web dashboard with real UI"],
+  ["YAML is the only interface", "Form-based editor generates YAML under the hood"],
+  ["No fit scoring", "AI scores each job 1–10 before applying"],
+  ["No persistent state", "Full application tracker with status history"],
+  ["No reasoning visibility", "AI logs: why it applied, what it changed"],
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-zinc-950 text-zinc-100">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-900 max-w-6xl mx-auto">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center w-7 h-7 rounded-md bg-indigo-600">
+            <Zap size={14} className="text-white" />
+          </div>
+          <span className="font-semibold text-sm text-white">JobPilot</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+            Sign in
+          </Link>
+          <Link href="/dashboard" className="flex items-center gap-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 text-sm font-medium text-white transition-colors">
+            Dashboard
+            <ArrowRight size={13} />
+          </Link>
         </div>
-      </main>
-    </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="px-6 py-24 max-w-4xl mx-auto text-center space-y-6">
+        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-400" />
+          <span className="text-xs text-indigo-300 font-medium">v0.1 — Early Access</span>
+        </div>
+
+        <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.1]">
+          AI-powered job hunting.
+          <br />
+          <span className="text-indigo-400">Apply smarter, not harder.</span>
+        </h1>
+
+        <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+          Scrapes jobs. Scores fit with GPT-4o. Tailors your resume. Generates cover letters.
+          Tracks everything. Built for engineers who want results, not busywork.
+        </p>
+
+        <div className="flex items-center justify-center gap-3">
+          <Link href="/dashboard" className="flex items-center gap-2 rounded-md bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-sm font-medium text-white transition-colors">
+            Open Dashboard
+            <ArrowRight size={15} />
+          </Link>
+          <Link href="/register" className="rounded-md border border-zinc-700 hover:border-zinc-500 px-6 py-3 text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors">
+            Create Account
+          </Link>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {FEATURES.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-3">
+              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600/20 border border-indigo-500/20">
+                <Icon size={18} className="text-indigo-400" />
+              </div>
+              <h3 className="font-medium text-white text-sm">{title}</h3>
+              <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Comparison table */}
+      <section className="px-6 pb-24 max-w-3xl mx-auto">
+        <h2 className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">What&apos;s different</h2>
+        <div className="rounded-xl border border-zinc-800 overflow-hidden">
+          <div className="grid grid-cols-2 border-b border-zinc-800">
+            <div className="px-4 py-3 text-xs font-medium text-zinc-500">AIHawk / existing tools</div>
+            <div className="px-4 py-3 text-xs font-medium text-indigo-400 border-l border-zinc-800">JobPilot</div>
+          </div>
+          {WHAT_CHANGES.map(([before, after]) => (
+            <div key={before} className="grid grid-cols-2 border-b border-zinc-800/50 last:border-0">
+              <div className="px-4 py-3 text-sm text-zinc-600">{before}</div>
+              <div className="px-4 py-3 text-sm text-zinc-300 border-l border-zinc-800/50 flex items-start gap-2">
+                <Check size={13} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                {after}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-900 px-6 py-6 text-center">
+        <p className="text-xs text-zinc-700">JobPilot — Built with Next.js, Prisma, OpenAI, Playwright.</p>
+      </footer>
+    </main>
   );
 }

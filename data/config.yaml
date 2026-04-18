@@ -1,0 +1,37 @@
+search:
+  keywords:
+    - "Frontend Engineer"
+    - "React Developer"
+    - "Full Stack Engineer"
+    - "SDE II"
+    - "Senior Frontend Developer"
+  locations:
+    - "Pune"
+    - "Bangalore"
+    - "Remote"
+    - "Mumbai"
+  platforms:
+    - linkedin
+  experience_level:
+    - mid-level
+    - senior
+  job_type:
+    - full-time
+    - remote
+  blacklist_companies: []
+  blacklist_keywords:
+    - PHP
+    - Angular
+    - blockchain
+    - Solidity
+
+application:
+  min_fit_score: 7
+  max_applications_per_run: 20
+  auto_apply: false
+  cover_letter: true
+  tailor_resume: true
+
+ai:
+  model: "gpt-4o"
+  resume_aggressiveness: "moderate"
