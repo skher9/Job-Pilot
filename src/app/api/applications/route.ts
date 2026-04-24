@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 
-const TEMP_USER_ID = "cltemp0000000000000000000";
-
 export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const apps = await prisma.application.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ applications: apps });

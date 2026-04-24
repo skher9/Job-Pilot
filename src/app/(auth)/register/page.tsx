@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,11 +17,25 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
     setLoading(true);
     setError("");
-    await new Promise((r) => setTimeout(r, 800));
-    setError("Auth not yet configured. Set up NEXTAUTH_SECRET and DB first.");
-    setLoading(false);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+    if (!res.ok) {
+      const data = await res.json() as { error?: string };
+      setError(data.error ?? "Registration failed.");
+      setLoading(false);
+      return;
+    }
+    await signIn("credentials", { email, password, redirect: false });
+    router.push("/dashboard");
   };
 
   return (
@@ -67,11 +84,6 @@ export default function RegisterPage() {
             {loading ? "Creating account..." : "Create account"}
           </button>
 
-          <p className="text-xs text-center text-zinc-600">
-            <Link href="/dashboard" className="text-indigo-400 hover:text-indigo-300">
-              Skip to dev dashboard →
-            </Link>
-          </p>
         </form>
       </div>
     </main>

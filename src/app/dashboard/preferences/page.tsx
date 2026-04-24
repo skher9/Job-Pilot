@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from "react";
-import { DEFAULT_CONFIG_YAML } from "@/lib/config/yaml-parser";
+import { useState, useEffect } from "react";
+import { DEFAULT_CONFIG_YAML, parseConfig } from "@/lib/config/yaml-parser";
 import { YamlPreview } from "@/components/profile/YamlPreview";
 import { cn } from "@/lib/utils";
 import { Check, AlertTriangle } from "lucide-react";
@@ -30,7 +30,7 @@ const DEFAULT_CONFIG: Config = {
     tailor_resume: true,
   },
   ai: {
-    model: "gpt-4o",
+    model: "deepseek-chat",
     resume_aggressiveness: "moderate",
   },
 };
@@ -57,7 +57,23 @@ function TagInput({ value, onChange, placeholder }: { value: string[]; onChange:
 export default function PreferencesPage() {
   const [config, setConfig] = useState<Config>(DEFAULT_CONFIG);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [showAutoApplyWarning, setShowAutoApplyWarning] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((r) => r.json())
+      .then((data: { configYaml?: string }) => {
+        if (data.configYaml) {
+          try {
+            setConfig(parseConfig(data.configYaml));
+          } catch {
+            // malformed stored yaml — keep defaults
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const configYaml = (() => { try { return yaml.dump(config, { lineWidth: 120 }); } catch { return DEFAULT_CONFIG_YAML; } })();
 
@@ -71,11 +87,16 @@ export default function PreferencesPage() {
     set("application", { ...config.application, ...updates });
 
   const save = async () => {
-    await fetch("/api/profile", {
+    setSaveError("");
+    const res = await fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ configYaml }),
     });
+    if (!res.ok) {
+      setSaveError("Save failed. Try again.");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -248,6 +269,9 @@ export default function PreferencesPage() {
           <button onClick={save} className={cn("w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all", saved ? "bg-emerald-600 text-white" : "bg-indigo-600 hover:bg-indigo-500 text-white")}>
             {saved ? <><Check size={14} /> Saved</> : "Save Preferences"}
           </button>
+          {saveError && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">{saveError}</p>
+          )}
         </div>
 
         {/* YAML preview */}

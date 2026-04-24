@@ -129,6 +129,7 @@ export function ProfileForm({ initialYaml }: { initialYaml?: string }) {
   const [yaml, setYaml] = useState(initialYaml ?? DEFAULT_PROFILE_YAML);
   const [yamlMode, setYamlMode] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     try {
@@ -142,11 +143,16 @@ export function ProfileForm({ initialYaml }: { initialYaml?: string }) {
     setProfile((p) => ({ ...p, [key]: value }));
 
   const save = async () => {
-    await fetch("/api/profile", {
+    setSaveError("");
+    const res = await fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ profileYaml: yaml }),
     });
+    if (!res.ok) {
+      setSaveError("Save failed. Try again.");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -305,6 +311,9 @@ export function ProfileForm({ initialYaml }: { initialYaml?: string }) {
           >
             {saved ? <><Check size={14} /> Saved</> : "Save Profile"}
           </button>
+          {saveError && (
+            <p className="text-xs text-red-400">{saveError}</p>
+          )}
         </div>
 
         {yamlMode && (

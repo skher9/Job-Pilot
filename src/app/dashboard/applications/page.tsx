@@ -1,15 +1,17 @@
 import { ApplicationTable } from "@/components/dashboard/ApplicationTable";
 import { prisma } from "@/lib/db/prisma";
-
-const TEMP_USER_ID = "cltemp0000000000000000000";
+import { auth } from "@/auth";
 
 export default async function ApplicationsPage() {
+  const session = await auth();
   let apps: Awaited<ReturnType<typeof prisma.application.findMany>> = [];
   try {
-    apps = await prisma.application.findMany({
-      where: { userId: TEMP_USER_ID },
-      orderBy: { createdAt: "desc" },
-    });
+    if (session?.user?.id) {
+      apps = await prisma.application.findMany({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: "desc" },
+      });
+    }
   } catch {
     apps = [];
   }

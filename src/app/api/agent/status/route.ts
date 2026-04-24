@@ -1,6 +1,10 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 
 export async function GET(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return new Response("Unauthorized", { status: 401 });
+
   const { searchParams } = new URL(req.url);
   const runId = searchParams.get("runId");
 
@@ -25,10 +29,10 @@ export async function GET(req: Request) {
         try {
           const run = await prisma.agentRun.findUnique({
             where: { id: runId },
-            select: { logs: true, status: true },
+            select: { logs: true, status: true, userId: true },
           });
 
-          if (!run) {
+          if (!run || run.userId !== session.user.id) {
             send("error", "Run not found");
             controller.close();
             return;

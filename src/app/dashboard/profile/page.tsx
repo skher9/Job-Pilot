@@ -1,16 +1,18 @@
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { prisma } from "@/lib/db/prisma";
-
-const TEMP_USER_ID = "cltemp0000000000000000000";
+import { auth } from "@/auth";
 
 export default async function ProfilePage() {
+  const session = await auth();
   let profileYaml: string | undefined;
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: TEMP_USER_ID },
-      select: { profileYaml: true },
-    });
-    profileYaml = user?.profileYaml ?? undefined;
+    if (session?.user?.id) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { profileYaml: true },
+      });
+      profileYaml = user?.profileYaml ?? undefined;
+    }
   } catch {
     profileYaml = undefined;
   }

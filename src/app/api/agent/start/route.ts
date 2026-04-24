@@ -1,33 +1,22 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 
-// Replace with session.user.id once auth is wired
-const TEMP_USER_ID = "cltemp0000000000000000000";
-
 export async function POST() {
-  try {
-    // Ensure temp user exists for dev
-    await prisma.user.upsert({
-      where: { id: TEMP_USER_ID },
-      update: {},
-      create: {
-        id: TEMP_USER_ID,
-        email: "dev@jobpilot.local",
-        name: "Dev User",
-      },
-    });
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  try {
     const run = await prisma.agentRun.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: session.user.id,
         status: "running",
         logs: "[agent] Run started\n",
       },
     });
 
-    // Kick off pipeline in background — don't await
     import("@/lib/agent/pipeline").then(({ runAgentPipeline }) => {
-      runAgentPipeline(TEMP_USER_ID, run.id).catch(console.error);
+      runAgentPipeline(session.user.id, run.id).catch(console.error);
     });
 
     return NextResponse.json({ runId: run.id, status: "running" });

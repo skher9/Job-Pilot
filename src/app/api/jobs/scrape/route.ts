@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { parseConfig } from "@/lib/config/yaml-parser";
 import { scrapeLinkedIn } from "@/lib/agent/scraper";
 
-const TEMP_USER_ID = "cltemp0000000000000000000";
-
 export async function POST() {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const user = await prisma.user.findUnique({
-      where: { id: TEMP_USER_ID },
+      where: { id: session.user.id },
       select: { configYaml: true },
     });
 

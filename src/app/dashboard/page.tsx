@@ -1,11 +1,9 @@
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ApplicationTable } from "@/components/dashboard/ApplicationTable";
 import { prisma } from "@/lib/db/prisma";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { Bot, ArrowRight } from "lucide-react";
-
-// Replace with session.user.id once auth is wired
-const TEMP_USER_ID = "cltemp0000000000000000000";
 
 async function getPageData(userId: string) {
   const weekAgo = new Date();
@@ -34,15 +32,16 @@ async function getPageData(userId: string) {
 }
 
 export default async function DashboardPage() {
+  const session = await auth();
   let data = {
     stats: { totalApplied: 0, interviews: 0, pendingReview: 0, thisWeek: 0 },
     recent: [] as Awaited<ReturnType<typeof prisma.application.findMany>>,
   };
 
   try {
-    data = await getPageData(TEMP_USER_ID);
+    if (session?.user?.id) data = await getPageData(session.user.id);
   } catch {
-    // DB not yet migrated — show empty state
+    // show empty state
   }
 
   return (

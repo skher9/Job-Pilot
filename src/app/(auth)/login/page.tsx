@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,10 +18,13 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    // NextAuth signIn will be wired here
-    await new Promise((r) => setTimeout(r, 800));
-    setError("Auth not yet configured. Set up NEXTAUTH_SECRET and DB first.");
-    setLoading(false);
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) {
+      setError("Invalid email or password.");
+      setLoading(false);
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -86,25 +92,7 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
 
-          <div className="relative flex items-center gap-3">
-            <div className="flex-1 h-px bg-zinc-800" />
-            <span className="text-xs text-zinc-600">or</span>
-            <div className="flex-1 h-px bg-zinc-800" />
-          </div>
 
-          <button
-            type="button"
-            className="w-full py-2.5 rounded-md border border-zinc-700 text-sm text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
-          >
-            Continue with Google
-          </button>
-
-          <p className="text-xs text-center text-zinc-600">
-            Or{" "}
-            <Link href="/dashboard" className="text-indigo-400 hover:text-indigo-300">
-              skip login for dev mode →
-            </Link>
-          </p>
         </form>
       </div>
     </main>

@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 
-const TEMP_USER_ID = "cltemp0000000000000000000";
-
 export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const user = await prisma.user.findUnique({
-      where: { id: TEMP_USER_ID },
+      where: { id: session.user.id },
       select: { profileYaml: true, configYaml: true },
     });
     return NextResponse.json({ profileYaml: user?.profileYaml, configYaml: user?.configYaml });
@@ -16,24 +18,18 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const body = await req.json() as { profileYaml?: string; configYaml?: string };
-
-    await prisma.user.upsert({
-      where: { id: TEMP_USER_ID },
-      update: {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
         ...(body.profileYaml !== undefined ? { profileYaml: body.profileYaml } : {}),
         ...(body.configYaml !== undefined ? { configYaml: body.configYaml } : {}),
       },
-      create: {
-        id: TEMP_USER_ID,
-        email: "dev@jobpilot.local",
-        name: "Dev User",
-        profileYaml: body.profileYaml,
-        configYaml: body.configYaml,
-      },
     });
-
     return NextResponse.json({ saved: true });
   } catch (err) {
     console.error("[profile/POST]", err);
